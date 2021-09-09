@@ -18,6 +18,7 @@ app.use(cookieParser());
 const { User } = require('./models/user');
 
 // *** USERS ***//
+// Register User
 app.post('/api/users/register', (req, res) => {
     const user = new User(req.body);
 
@@ -36,7 +37,48 @@ app.post('/api/users/register', (req, res) => {
 
     });
     // res.status(200);
+}); 
+
+// LOGIN USER
+app.post("/api/users/login", (req, res) => {
+    // find the email address if it exist in the database
+    User.findOne({ 'email': req.body.email }, (err, user) => {
+        if(!user) {
+            return res.json({
+                loginSuccess: false,
+                message: "Auth failed, email not found"
+            });
+        }
+
+        // check user password if it matches the password in the database
+        user.comparePassword(req.body.password, (err, isMatch) => {
+            if(!isMatch) {
+                return res.json({
+                    loginSuccess: false,
+                    message: "Wrong password"
+                });
+            }
+
+            // if it does, generate a token and send it back to the user
+            user.generateToken((err, user) => {
+                if(err) {
+                    return res.status(400).send(err);
+                }
+
+                // set the cookie
+                // **the name and the value of the cookie**
+                res.cookie("w_auth", user.token).status(200).json({
+                    loginSuccess: true
+                });
+            });
+        });
+    });
+    
+    
+
 })
+
+
 
 // const cors = require('cors');
 
