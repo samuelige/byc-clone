@@ -17,6 +17,9 @@ app.use(cookieParser());
 // *** MODELS ***//
 const { User } = require('./models/user');
 const {Brand} = require('./models/brand');
+const {Product} = require('./models/product');
+const {ProductCategories} = require('./models/product_categorie')
+
 
 
 // *** MIDDLEWARES ***//
@@ -24,7 +27,9 @@ const { auth } = require('./middleware/auth');
 const { admin } = require('./middleware/admin');
 
 
+
 // *** BRANDS ***//
+// Createe a brand
 app.post('/api/product/brand', auth, admin, (req, res) => {
     const brand = new Brand(req.body);
 
@@ -37,12 +42,60 @@ app.post('/api/product/brand', auth, admin, (req, res) => {
     });
 })  
 
+// Get all brands
 app.get('/api/product/get-brands', (req, res) => {
     Brand.find({}, (err, brands) => {
         if (err) return res.status(400).send(err);
         res.status(200).send(brands);
     })
 })
+
+// *** Clothes ***//
+// Create a Product Categories
+app.post('/api/product/create_productCategories', auth, admin, (req, res) => {
+    const productCategories = new ProductCategories(req.body);
+
+    productCategories.save((err, doc) => {
+        if (err) return res.json({ success: false, err });
+        res.status(200).json({
+            success: true,
+            productCategories: doc
+        });
+    });
+})
+
+// Get all Product Categories
+app.get('/api/product/all_productCategories', (req, res) => {
+    ProductCategories.find({}, (err, productCategories) => {
+        if (err) return res.status(400).send(err);
+        res.status(200).send(productCategories);
+    })
+});
+
+// *** PRODUCTS ***//
+// Create a product
+// admin,
+app.post('/api/product/create_product', auth,  (req, res) => {
+    const product = new Product(req.body);
+
+    product.save((err, doc) => {
+        if (err) return res.json({ success: false, err });
+        res.status(200).json({
+            success: true,
+            product: doc
+        });
+    });
+});
+
+// Get all products
+app.get('/api/product/all_products', (req, res) => {
+    Product.find({}, (err, products) => {
+        if (err) return res.status(400).send(err);
+        res.status(200).send(products);
+    })
+});
+
+// Get single product
 
 // *** USERS ***//
 
