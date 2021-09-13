@@ -95,7 +95,28 @@ app.get('/api/product/all_products', (req, res) => {
     })
 });
 
-// Get single product
+// Get single by ID product
+// Query string method
+app.get('/api/product/product_by_id', (req, res) => {
+    let type = req.query.type;
+    let items = req.query.id;
+
+    if (type === "array") {
+        let ids = req.query.id.split(',');
+
+        items = [];
+        items = ids.map(item => {
+            return mongoose.Types.ObjectId(item);
+        })
+    }
+
+    Product.find({ '_id': { $in: items } })
+        // .populate('brand')
+        .populate('productCategory')
+        .exec((err, docs) => {
+            return res.status(200).send(docs);
+        });
+});
 
 // *** USERS ***//
 

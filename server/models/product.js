@@ -32,9 +32,9 @@ const productSchema = mongoose.Schema({
         type: Boolean,
         required: true
     },
-    product_category: {
+    productCategory: {
         type: schema.Types.ObjectId,
-        ref: 'ProductCategory',
+        ref: 'ProductCategories',
         required: true
     },
     size: {
