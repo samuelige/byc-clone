@@ -95,7 +95,7 @@ app.get('/api/product/all_products', (req, res) => {
     })
 });
 
-// Get single by ID product
+// Get single product by ID 
 // Query string method
 app.get('/api/product/product_by_id', (req, res) => {
     let type = req.query.type;
@@ -111,12 +111,38 @@ app.get('/api/product/product_by_id', (req, res) => {
     }
 
     Product.find({ '_id': { $in: items } })
-        // .populate('brand')
+        .populate('brand')
         .populate('productCategory')
         .exec((err, docs) => {
             return res.status(200).send(docs);
         });
 });
+
+// Get product by arrival
+// /products?sortBy=createdAt&order=desc&limit=4
+
+// Get product by sells
+// /products?sortBy=sold&order=desc&limit=4
+
+app.get('/api/product/products', (req, res) => {
+    let order = req.query.order ? req.query.order : 'asc';
+    let sortBy = req.query.sortBy ? req.query.sortBy : '_id';
+
+    let limit = req.query.limit ? parseInt(req.query.limit) : 100;
+
+    Product.find()
+        .populate('brand')
+        .populate('productCategory')
+        .sort([[sortBy, order]])
+        .limit(limit)
+        .exec((err, docs) => {
+            if (err) return res.status(400).send(err);
+            res.send(docs);
+        });
+});
+
+
+
 
 // *** USERS ***//
 
